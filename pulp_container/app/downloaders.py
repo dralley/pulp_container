@@ -3,13 +3,12 @@ from logging import getLogger
 from urllib import parse
 import aiohttp
 import asyncio
-import backoff
 import json
 import re
 
 from aiohttp.client_exceptions import ClientResponseError
 
-from pulpcore.plugin.download import http_giveup, HttpDownloader
+from pulpcore.plugin.download import HttpDownloader
 
 
 log = getLogger(__name__)
@@ -32,7 +31,6 @@ class RegistryAuthHttpDownloader(HttpDownloader):
         self.remote = kwargs.pop("remote")
         super().__init__(*args, **kwargs)
 
-    @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=10, giveup=http_giveup)
     async def _run(self, handle_401=True, extra_data=None):
         """
         Download, validate, and compute digests on the `url`. This is a coroutine.
